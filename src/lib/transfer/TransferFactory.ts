@@ -1,22 +1,30 @@
 
 import Trip from "../trip/Trip";
-import Line from "../line/Line";
-import {Duration} from "../../../../transfer-pattern-generator/ts/src/Journey/Connection";
+import LineRepository from "../line/repository/LineRepository";
+import {Station} from "../trip/Trip";
 
-type FootpathMap = {
-    [origin: string]: {
-        [destination: string]: Duration
-    }
-};
+interface FootpathRepository {
+    stationsConnectedTo(station: Station): Station[];
 
+}
 export default class TransferFactory {
+    private lineRepository: LineRepository;
+    private footpathRepository: FootpathRepository;
+
+    /**
+     * @param lineRepository
+     * @param footpathRepository
+     */
+    constructor(lineRepository: LineRepository, footpathRepository: FootpathRepository) {
+        this.lineRepository = lineRepository;
+        this.footpathRepository = footpathRepository;
+    }
 
     /**
      *
      * @param trips
-     * @param lines
      */
-    public getTransfers(trips: Trip[], lines: Line[], footpaths: FootpathMap) {
+    public getTransfers(trips: Trip[]) {
 
     }
 
@@ -24,12 +32,11 @@ export default class TransferFactory {
      * Algorithm 1 (p5). Loop over every stop in every trip and calculate the possible transfers
      *
      * @param trips
-     * @param lines
      */
-    private generateTransfers(trips: Trip[], lines: Line[], foothpaths: FootpathMap) {
+    private generateTransfers(trips: Trip[]) {
         for (const trip of trips) {
             for (const stop of trip.stops) {
-                const stops = Object.keys(foothpaths[stop.station]);
+                const stations = this.footpathRepository.stationsConnectedTo(stop.station);
 
             }
         }
