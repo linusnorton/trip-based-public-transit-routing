@@ -1,0 +1,26 @@
+{
+  "name": "trip-based-public-transit-routing",
+  "version": "1.0.0",
+  "description": "journey planner",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "mocha --compilers ts:ts-node/register,tsx:ts-node/register test/**/*.ts"
+  },
+  "author": "Linus Norton",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@types/core-js": "^0.9.34",
+    "bluebird": "^3.4.6",
+    "ts-node": "^1.6.0",
+    "ts-option": "^1.1.2",
+    "typescript": "^2.0.3"
+  },
+  "devDependencies": {
+    "@types/bluebird": "^3.0.35",
+    "@types/chai": "^3.4.34",
+    "@types/mocha": "^2.2.32",
+    "@types/node": "^6.0.45",
+    "chai": "^3.5.0",
+    "mocha": "^3.1.2"
+  }
+}
