@@ -1,10 +1,11 @@
-import Trip from "./Trip";
+import Trip from "../trip/Trip";
 import Line from "./Line";
-import {StoppingPattern} from "./Trip";
+import {StoppingPattern} from "../trip/Trip";
 import {Option, Some, None} from "ts-option";
+import {InMemoryLineRepository} from "./repository/InMemoryLineRepository";
 
-type TripMap = Map<StoppingPattern, Trip[]>;
-type LineMap = Map<StoppingPattern, Line[]>;
+export type TripMap = Map<StoppingPattern, Trip[]>;
+export type LineMap = Map<StoppingPattern, Line[]>;
 
 const emptyTripMap = () => new Map<StoppingPattern, Trip[]>();
 const emptyLineMap = () => new Map<StoppingPattern, Line[]>();
@@ -14,7 +15,7 @@ export default class LineFactory {
     /**
      * Group the given trips into a set of lines
      */
-    public getLines(trips: Trip[]): Line[] {
+    public getLines(trips: Trip[]): InMemoryLineRepository {
         const tripsByStoppingPattern: TripMap = trips.reduce(this.groupTripsByStoppingPattern, emptyTripMap());
         const linesByStoppingPattern: LineMap = Array.from(tripsByStoppingPattern.keys()).reduce((m, p) => m.set(p, []), emptyLineMap());
 
@@ -29,8 +30,7 @@ export default class LineFactory {
             }
         }
 
-        // flatten the Map to get all the lines
-        return [].concat.apply([], Array.from(linesByStoppingPattern.values()));
+        return new InMemoryLineRepository(linesByStoppingPattern);
     }
 
     /**

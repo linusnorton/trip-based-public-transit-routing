@@ -3,7 +3,7 @@ import * as chai from "chai";
 
 import Trip from "../../../src/lib/trip/Trip";
 import {Stop} from "../../../src/lib/trip/Trip";
-import Line from "../../../src/lib/trip/Line";
+import Line from "../../../src/lib/line/Line";
 
 export class TripFixtures {
 

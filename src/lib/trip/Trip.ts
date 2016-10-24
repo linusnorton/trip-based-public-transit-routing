@@ -1,4 +1,4 @@
-import Line from "./Line";
+import Line from "../line/Line";
 
 export type Station = string;
 export type Time = number | null;

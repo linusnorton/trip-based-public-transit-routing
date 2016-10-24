@@ -1,5 +1,5 @@
-import LineFactory from "../../../lib/trip/LineFactory";
-import LineRepository from "../../../lib/trip/repository/LineRepository";
+import LineFactory from "../../../lib/line/LineFactory";
+import LineRepository from "../../../lib/line/repository/LineRepository";
 import TripRepository from "../../../lib/trip/repository/TripRepository";
 
 export default class GenerateLines {
