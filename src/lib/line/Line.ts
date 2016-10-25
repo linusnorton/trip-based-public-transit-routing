@@ -13,10 +13,18 @@ export default class Line {
     }
 
     /**
+     * Add the trip, ordering them by arrivalTime
+     *
      * @param trip
      */
     add(trip: Trip): void {
-        this.trips.push(trip);
+        let i = 0;
+
+        while(i < this.trips.length && trip.stops[1].arrivalTime > this.trips[i].stops[1].arrivalTime) {
+            i++;
+        }
+
+        this.trips.splice(i, 0, trip);
     }
 
     /**
