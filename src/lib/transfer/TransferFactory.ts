@@ -44,20 +44,25 @@ export default class TransferFactory {
         const transfers = [];
 
         for (const trip of trips) {
-            for (let i = 1; i < trip.stops.length -1; i++) {
+            const tripLine = this.lineRepository.lineForTrip(trip);
+
+            for (let i = 1; i < trip.stops.length; i++) {
                 const stop = trip.stops[i];
                 const stations = this.footpathRepository.stationsConnectedTo(stop.station);
 
                 for (const station of [stop.station, ...stations]) {
+                    // if station === stop.station interchange is applied
+                    const arrivalTime = stop.arrivalTime + this.footpathRepository.getDuration(stop.station, station);
+
                     for (const line of this.lineRepository.linesForStation(station)) {
                         for (const tripB of line.trips) {
-                            // if station === stop.station interchange is applied
-                            const arrivalTime = stop.arrivalTime + this.footpathRepository.getDuration(stop.station, station);
-                            const tripReachable = tripB.canBeReached(station, arrivalTime);
-                            const notTheSameLine = ???;
+                            for (let j = tripB.indexOf(station); j < tripB.stops.length - 1; j++) {
+                                const stopB = tripB.stops[j];
 
-                            if (tripReachable && notTheSameLine) {
-                                transfers.push(new Transfer(???, ???));
+                                // TODO i < j
+                                if (stopB.departureTime > arrivalTime && line != tripLine && !trip.dominates(tripB)) {
+                                    transfers.push(new Transfer(trip, station, tripB, stopB));
+                                }
                             }
                         }
                     }
