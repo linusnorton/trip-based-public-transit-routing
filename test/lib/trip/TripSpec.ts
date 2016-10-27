@@ -45,6 +45,13 @@ export class TripFixtures {
         new Stop("D", 1020, null)
     ]);
 
+    static tripG = new Trip([
+        new Stop("D", null, 1010),
+        new Stop("C", 1015, 1016),
+        new Stop("B", 1020, 1021),
+        new Stop("A", 1025, null)
+    ]);
+
 }
 
 describe("Trip", () => {
