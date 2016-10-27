@@ -26,9 +26,23 @@ export class TripFixtures {
     ]);
 
     static tripD = new Trip([
-        new Stop("X", null, 1002),
-        new Stop("Y", 1006, 1007),
-        new Stop("Z", 1011, null)
+        new Stop("X", null, 1102),
+        new Stop("Y", 1106, 1107),
+        new Stop("Z", 1111, null)
+    ]);
+
+    static tripE = new Trip([
+        new Stop("A", null, 1000),
+        new Stop("B", 1005, 1006),
+        new Stop("C", 1010, 1011),
+        new Stop("D", 1015, null)
+    ]);
+
+    static tripF = new Trip([
+        new Stop("A", null, 1005),
+        new Stop("B", 1010, 1011),
+        new Stop("C", 1015, 1016),
+        new Stop("D", 1020, null)
     ]);
 
 }
@@ -56,5 +70,9 @@ describe("Trip", () => {
         chai.expect(TripFixtures.tripD.stoppingPattern()).to.equal("XYZ");
     });
 
+    it("knows when it is dominating", () => {
+        chai.expect(TripFixtures.tripA.dominates(TripFixtures.tripB)).to.equal(true);
+        chai.expect(TripFixtures.tripB.dominates(TripFixtures.tripA)).to.equal(false);
+    });
 
 });

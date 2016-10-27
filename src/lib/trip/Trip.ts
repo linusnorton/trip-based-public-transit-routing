@@ -71,4 +71,15 @@ export default class Trip {
 
         return false;
     }
+
+    /**
+     * A trip dominates another if "is no worse than the other in any criterion" in this case we are only
+     * comparing the arrival time at the destination.
+     *
+     * @param trip
+     * @returns {boolean}
+     */
+    public dominates(trip: Trip): boolean {
+        return this.stops[this.stops.length - 1].arrivalTime < trip.stops[this.stops.length - 1].arrivalTime;
+    }
 }
