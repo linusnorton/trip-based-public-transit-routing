@@ -1,9 +1,15 @@
 
 import LineRepository from "./LineRepository";
-import {Option, Some, None} from "ts-option";
 import Line from "../Line";
 import {Station, default as Trip} from "../../trip/Trip";
 import {LineMap} from "../LineFactory";
+import {Map} from "immutable";
+
+declare module "immutable" {
+    interface Map<K, V> {
+        [Symbol.iterator](): IterableIterator<[K,V]>;
+    }
+}
 
 type LineTripMap = Map<Trip, Line>;
 type LineWithIndex = [number, Line];
@@ -19,8 +25,8 @@ export class InMemoryLineRepository implements LineRepository {
      */
     public constructor(linesByStoppingPattern: LineMap) {
         this.lines = [];
-        this.linesByTrip = new Map<Trip, Line>();
-        this.linesByStation = new Map<Station, LineWithIndex[]>();
+        this.linesByTrip = Map<Trip, Line>();
+        this.linesByStation = Map<Station, LineWithIndex[]>();
 
         for (const [_, lines] of linesByStoppingPattern) {
             const stoppingStations = lines[0].stoppingStations();
@@ -29,19 +35,16 @@ export class InMemoryLineRepository implements LineRepository {
             // index the lines by each station in the line, storing both the line and and the index of the station
             for (let j = 0; j < stoppingStations.length; j++) {
                 const station = lines[0].stoppingStations()[j];
+                const currentValue = this.linesByStation.get(station, []);
+                const linesWithIndex = lines.map((line): LineWithIndex => [j, line]);
 
-                if (this.linesByStation.has(station)) {
-                    this.linesByStation.get(station).concat(lines.map((line): LineWithIndex => [j, line]));
-                }
-                else {
-                    this.linesByStation.set(station, lines.map((line): LineWithIndex => [j, line]));
-                }
+                this.linesByStation = this.linesByStation.set(station, currentValue.concat(linesWithIndex));
             }
 
-            // set up an index for each trips line
+            // set up an index for each trip's line
             for (const line of lines) {
                 for (const trip of line.trips) {
-                    this.linesByTrip.set(trip, line);
+                    this.linesByTrip = this.linesByTrip.set(trip, line);
                 }
             }
         }
@@ -52,9 +55,7 @@ export class InMemoryLineRepository implements LineRepository {
      * @returns {[number, Line][]}
      */
     public linesForStation(station: Station): [number, Line][] {
-        return this.linesByStation.has(station)
-            ? this.linesByStation.get(station)
-            : [];
+        return this.linesByStation.get(station, []);
     }
 
     /**

@@ -3,12 +3,16 @@ import Line from "./Line";
 import {StoppingPattern} from "../trip/Trip";
 import {Option, Some, None} from "ts-option";
 import {InMemoryLineRepository} from "./repository/InMemoryLineRepository";
+import {Map} from "immutable";
+
+declare module "immutable" {
+    interface Map<K, V> {
+        [Symbol.iterator](): IterableIterator<[K,V]>;
+    }
+}
 
 export type TripMap = Map<StoppingPattern, Trip[]>;
 export type LineMap = Map<StoppingPattern, Line[]>;
-
-const emptyTripMap = () => new Map<StoppingPattern, Trip[]>();
-const emptyLineMap = () => new Map<StoppingPattern, Line[]>();
 
 export default class LineFactory {
 
@@ -16,17 +20,19 @@ export default class LineFactory {
      * Group the given trips into a set of lines
      */
     public getLines(trips: Trip[]): InMemoryLineRepository {
-        const tripsByStoppingPattern: TripMap = trips.reduce(this.groupTripsByStoppingPattern, emptyTripMap());
-        const linesByStoppingPattern: LineMap = Array.from(tripsByStoppingPattern.keys()).reduce((m, p) => m.set(p, []), emptyLineMap());
+        const tripsByStoppingPattern: TripMap = trips.reduce(this.groupByStoppingPattern, Map<StoppingPattern, Trip[]>());
+        let linesByStoppingPattern: LineMap = Map<StoppingPattern, Line[]>();
 
         for (const [stoppingPattern, trips] of tripsByStoppingPattern) {
-            const lines = linesByStoppingPattern.get(stoppingPattern);
+            const lines = linesByStoppingPattern.get(stoppingPattern, []);
 
             for (const trip of trips) {
-                this.getLineForTrip(trip, lines).match<any>({
+                this.getLineForTrip(trip, lines).match({
                     some: line => line.add(trip),
                     none: () => lines.push(new Line([trip]))
                 });
+
+                linesByStoppingPattern = linesByStoppingPattern.set(stoppingPattern, lines);
             }
         }
 
@@ -34,23 +40,14 @@ export default class LineFactory {
     }
 
     /**
-     * Used to reduce the trips into an Map<StoppingPattern, Trip[]>
+     * Used to group the trips by their stopping pattern
      *
-     * @param accum
+     * @param prev
      * @param item
-     * @returns TripMap
+     * @returns {Map<StoppingPattern, Array>}
      */
-    private groupTripsByStoppingPattern(accum: TripMap, item: Trip) {
-        const stoppingPattern = item.stoppingPattern();
-
-        if (accum.has(stoppingPattern)) {
-            accum.get(stoppingPattern).push(item);
-        }
-        else {
-            accum.set(stoppingPattern, [item]);
-        }
-
-        return accum;
+    private groupByStoppingPattern(prev: TripMap, item: Trip): TripMap {
+        return prev.update(item.stoppingPattern(), [], trips => trips.concat(item));
     }
 
     /**

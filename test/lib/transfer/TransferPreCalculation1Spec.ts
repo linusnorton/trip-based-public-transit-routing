@@ -6,23 +6,24 @@ import {InMemoryLineRepository} from "../../../src/lib/line/repository/InMemoryL
 import InMemoryFootpathRepository from "../../../src/lib/transfer/repository/InMemoryFootpathRepository";
 import TransferPreCalculation1 from "../../../src/lib/transfer/TransferPreCalculation1";
 import Transfer from "../../../src/lib/transfer/Transfer";
+import {Map} from 'immutable';
 
 describe("Transfer pre-calculation step 1", () => {
 
     it("calculates a basic set of transfers", () => {
-        const lineRepo = new InMemoryLineRepository(new Map([
-            [TripFixtures.tripA.stoppingPattern(), [
+        const lineRepo = new InMemoryLineRepository(Map({
+            [TripFixtures.tripA.stoppingPattern()]: [
                 new Line([TripFixtures.tripA, TripFixtures.tripB]),
                 new Line([TripFixtures.tripC]),
-            ]],
-            [TripFixtures.tripD.stoppingPattern(), [new Line([TripFixtures.tripD])]],
-        ]));
+            ],
+            [TripFixtures.tripD.stoppingPattern()]: [new Line([TripFixtures.tripD])]
+        }));
 
-        const footpathRepo = new InMemoryFootpathRepository(new Map([
-            ["A", new Map([["A", 1]])],
-            ["B", new Map([["B", 1]])],
-            ["C", new Map([["C", 1]])],
-        ]));
+        const footpathRepo = new InMemoryFootpathRepository(Map({
+            "A": Map({"A": 1}),
+            "B": Map({"B": 1}),
+            "C": Map({"C": 1}),
+        }));
 
         const trips = [
             TripFixtures.tripA,
@@ -41,24 +42,22 @@ describe("Transfer pre-calculation step 1", () => {
     });
 
     it("calculates transfers made available via footpath", () => {
-        const lineRepo = new InMemoryLineRepository(new Map([
-            [TripFixtures.tripA.stoppingPattern(), [
+        const lineRepo = new InMemoryLineRepository(Map({
+            [TripFixtures.tripA.stoppingPattern()]: [
                 new Line([TripFixtures.tripA, TripFixtures.tripB]),
                 new Line([TripFixtures.tripC]),
-            ]],
-            [TripFixtures.tripD.stoppingPattern(), [new Line([TripFixtures.tripD])]],
-        ]));
+            ],
+            [TripFixtures.tripD.stoppingPattern()]: [new Line([TripFixtures.tripD])]
+        }));
 
-        const footpathRepo = new InMemoryFootpathRepository(new Map([
-            ["A", new Map([["A", 1]])],
-            ["B", new Map([["B", 1]])],
-            ["C", new Map([["C", 1]])],
-            ["X", new Map([["X", 1]])],
-            ["Y", new Map([["Y", 1]])],
-            ["Z", new Map([["Z", 1]])],
-            ["C", new Map([["X", 1]])],
-            ["X", new Map([["C", 1]])],
-        ]));
+        const footpathRepo = new InMemoryFootpathRepository(Map({
+            "A": Map({"A": 1}),
+            "B": Map({"B": 1}),
+            "C": Map({"C": 1, "X": 1}),
+            "X": Map({"X": 1, "C": 1}),
+            "Y": Map({"Y": 1}),
+            "Z": Map({"Z": 1}),
+        }));
 
         const trips = [
             TripFixtures.tripA,
@@ -81,19 +80,18 @@ describe("Transfer pre-calculation step 1", () => {
     });
 
     it("uses footpaths to take shortcuts", () => {
-        const lineRepo = new InMemoryLineRepository(new Map([
-            [TripFixtures.tripE.stoppingPattern(), [
+        const lineRepo = new InMemoryLineRepository(Map({
+            [TripFixtures.tripA.stoppingPattern()]: [
                 new Line([TripFixtures.tripE, TripFixtures.tripF]),
-            ]]
-        ]));
+            ]
+        }));
 
-        const footpathRepo = new InMemoryFootpathRepository(new Map([
-            ["A", new Map([["A", 1]])],
-            ["B", new Map([["B", 1]])],
-            ["C", new Map([["C", 1]])],
-            ["D", new Map([["D", 1]])],
-            ["B", new Map([["C", 1]])],
-        ]));
+        const footpathRepo = new InMemoryFootpathRepository(Map({
+            "A": Map({"A": 1}),
+            "B": Map({"B": 1, "C": 1}),
+            "C": Map({"C": 1}),
+            "D": Map({"D": 1}),
+        }));
 
         const trips = [
             TripFixtures.tripE,
@@ -110,19 +108,18 @@ describe("Transfer pre-calculation step 1", () => {
     });
 
     it("uses footpaths go back on itself", () => {
-        const lineRepo = new InMemoryLineRepository(new Map([
-            [TripFixtures.tripE.stoppingPattern(), [
+        const lineRepo = new InMemoryLineRepository(Map({
+            [TripFixtures.tripA.stoppingPattern()]: [
                 new Line([TripFixtures.tripE, TripFixtures.tripF]),
-            ]]
-        ]));
+            ]
+        }));
 
-        const footpathRepo = new InMemoryFootpathRepository(new Map([
-            ["A", new Map([["A", 1]])],
-            ["B", new Map([["B", 1]])],
-            ["C", new Map([["C", 1]])],
-            ["D", new Map([["D", 1]])],
-            ["C", new Map([["B", 1]])],
-        ]));
+        const footpathRepo = new InMemoryFootpathRepository(Map({
+            "A": Map({"A": 1}),
+            "B": Map({"B": 1}),
+            "C": Map({"C": 1, "B": 1}),
+            "D": Map({"D": 1}),
+        }));
 
         const trips = [
             TripFixtures.tripE,

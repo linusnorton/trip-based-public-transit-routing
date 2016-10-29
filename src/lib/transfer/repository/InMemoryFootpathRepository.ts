@@ -3,6 +3,7 @@ import FootpathRepository from "./FootpathRepository";
 import {Stop, Station} from "../../trip/Trip";
 import {Duration} from "./FootpathRepository";
 import {FootpathNotFoundError} from "./FootpathRepository";
+import {Map} from 'immutable';
 
 type FootpathMap = Map<Station, Map<Station, Duration>>;
 
@@ -29,13 +30,9 @@ export default class InMemoryFootpathRepository implements FootpathRepository {
             throw new FootpathNotFoundError(`No footpath entry for ${stop.station}. There should at least be interchange`);
         }
 
-        const stops: Stop[] = [];
-
-        for (const [station, duration] of this.footpaths.get(stop.station)) {
-            stops.push(new Stop(station, stop.arrivalTime + duration, null));
-        }
-
-        return stops;
+        return this.footpaths.get(stop.station).map((d: Duration, s: Station): Stop => {
+            return new Stop(s, stop.arrivalTime + d, null);
+        }).toArray();
     }
 
 }

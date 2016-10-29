@@ -18,7 +18,7 @@ export default class Line {
      *
      * @param trip
      */
-    public add(trip: Trip): void {
+    public add(trip: Trip): number {
         let i = 0;
 
         while(i < this.trips.length && trip.stops[1].arrivalTime > this.trips[i].stops[1].arrivalTime) {
@@ -26,6 +26,8 @@ export default class Line {
         }
 
         this.trips.splice(i, 0, trip);
+
+        return i;
     }
 
     /**
