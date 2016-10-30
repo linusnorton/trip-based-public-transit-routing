@@ -1,11 +1,14 @@
 
 import Trip from "../trip/Trip";
+import {Duration} from "./repository/FootpathRepository";
+import {Station} from "../trip/Trip";
+import {Stop} from "../trip/Trip";
 
 export default class Transfer {
-    private tripT: Trip;
-    private stopI: number;
-    private tripU: Trip;
-    private stopJ: number;
+    public tripT: Trip;
+    public stopI: number;
+    public tripU: Trip;
+    public stopJ: number;
 
     /**
      * @param tripT
@@ -30,15 +33,29 @@ export default class Transfer {
     }
 
     /**
-     * Returns true if the arrival time at the previous station is less from tripU, making it quicker to use the
-     * transfer
+     * Returns true if it is possible to change a stop earlier. Assumes the transfer is a U-turn transfer.
      *
      * @returns {boolean}
      */
-    public uTurnIsQuicker(): boolean {
-        const arrivalTimeOnTripT = this.tripT.stops[this.stopI - 1]; // todo interchange should be applied here
-        const arrivalTimeOnTripU = this.tripU.stops[this.stopI - 1];
+    public canChangeEarlier(interchange: Duration): boolean {
+        const arrivalTime = this.tripT.stops[this.stopI - 1].arrivalTime;
+        const departureTime = this.tripU.stops[this.stopJ + 1].departureTime;
 
-        return arrivalTimeOnTripU < arrivalTimeOnTripT;
+        return arrivalTime + interchange < departureTime;
     }
+
+    /**
+     * @returns {Stop}
+     */
+    public getStationPriorToTransfer(): Station {
+        return this.tripT.stops[this.stopI - 1].station;
+    }
+
+    /**
+     * @returns {Stop[]}
+     */
+    public stopsAfterTransfer(): Stop[] {
+        return this.tripU.stops.slice(this.stopJ + 1);
+    }
+
 }

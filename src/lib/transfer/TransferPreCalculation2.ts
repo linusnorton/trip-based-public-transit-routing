@@ -1,9 +1,26 @@
 
 import Transfer from "./Transfer";
+import FootpathRepository from "./repository/FootpathRepository";
 
 export default class TransferPreCalculation2 {
+    private footpathRepository: FootpathRepository;
 
+    /**
+     * @param footpathRepository
+     */
+    constructor(footpathRepository: FootpathRepository) {
+        this.footpathRepository = footpathRepository;
+    }
+
+    /**
+     * @param transfers
+     * @returns {Transfer[]}
+     */
     public getTransfers(transfers: Transfer[]): Transfer[] {
-        return transfers.filter(transfer => !transfer.isUTurn() || transfer.uTurnIsQuicker());
+        return transfers.filter(transfer => {
+            const interchange = this.footpathRepository.getInterchangeAt(transfer.getStationPriorToTransfer());
+
+            return !transfer.isUTurn() || transfer.canChangeEarlier(interchange);
+        });
     }
 }

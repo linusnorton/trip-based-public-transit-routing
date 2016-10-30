@@ -31,8 +31,16 @@ export default class InMemoryFootpathRepository implements FootpathRepository {
         }
 
         return this.footpaths.get(stop.station).map((d: Duration, s: Station): Stop => {
-            return new Stop(s, stop.arrivalTime + d, null);
+            return new Stop(s, stop.arrivalTime + d, Infinity);
         }).toArray();
+    }
+
+    /**
+     * @param station
+     * @returns {Duration}
+     */
+    public getInterchangeAt(station: Station): Duration {
+        return this.footpaths.get(station).get(station);
     }
 
 }

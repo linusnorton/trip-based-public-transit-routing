@@ -17,9 +17,15 @@ describe("Transfer", () => {
         chai.expect(uTurn.isUTurn()).to.equal(true);
     });
 
-    it("knows when the U-turn is quicker", () => {
+    it("knows if the transfer can be made at an earlier stop", () => {
         const uTurn = new Transfer(TripFixtures.tripF, 2, TripFixtures.tripG, 1);
-        chai.expect(uTurn.uTurnIsQuicker()).to.equal(false);
+        chai.expect(uTurn.canChangeEarlier(0)).to.equal(true);
+        chai.expect(uTurn.canChangeEarlier(100)).to.equal(false);
+    });
+
+    it("returns the stops after the transfer", () => {
+        const transfer = new Transfer(TripFixtures.tripF, 2, TripFixtures.tripG, 1);
+        chai.expect(transfer.stopsAfterTransfer()).to.deep.equal(transfer.tripU.stops.slice(2));
     });
 
 });

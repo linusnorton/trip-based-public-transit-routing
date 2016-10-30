@@ -8,48 +8,48 @@ import Line from "../../../src/lib/line/Line";
 export class TripFixtures {
 
     static tripA = new Trip([
-        new Stop("A", null, 1000),
+        new Stop("A", Infinity, 1000),
         new Stop("B", 1005, 1006),
-        new Stop("C", 1010, null)
+        new Stop("C", 1010, Infinity)
     ]);
 
     static tripB = new Trip([
-        new Stop("A", null, 1001),
+        new Stop("A", Infinity, 1001),
         new Stop("B", 1007, 1008),
-        new Stop("C", 1012, null)
+        new Stop("C", 1012, Infinity)
     ]);
 
     static tripC = new Trip([
-        new Stop("A", null, 1002),
+        new Stop("A", Infinity, 1002),
         new Stop("B", 1006, 1007),
-        new Stop("C", 1011, null)
+        new Stop("C", 1011, Infinity)
     ]);
 
     static tripD = new Trip([
-        new Stop("X", null, 1102),
+        new Stop("X", Infinity, 1102),
         new Stop("Y", 1106, 1107),
-        new Stop("Z", 1111, null)
+        new Stop("Z", 1111, Infinity)
     ]);
 
     static tripE = new Trip([
-        new Stop("A", null, 1000),
+        new Stop("A", Infinity, 1000),
         new Stop("B", 1005, 1006),
         new Stop("C", 1010, 1011),
-        new Stop("D", 1015, null)
+        new Stop("D", 1015, Infinity)
     ]);
 
     static tripF = new Trip([
-        new Stop("A", null, 1005),
+        new Stop("A", Infinity, 1005),
         new Stop("B", 1010, 1011),
         new Stop("C", 1015, 1016),
-        new Stop("D", 1020, null)
+        new Stop("D", 1020, Infinity)
     ]);
 
     static tripG = new Trip([
-        new Stop("D", null, 1010),
+        new Stop("D", Infinity, 1010),
         new Stop("C", 1015, 1016),
         new Stop("B", 1020, 1021),
-        new Stop("A", 1025, null)
+        new Stop("A", 1025, Infinity)
     ]);
 
 }

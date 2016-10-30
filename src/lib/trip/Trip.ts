@@ -1,7 +1,7 @@
 import Line from "../line/Line";
 
 export type Station = string;
-export type Time = number | null;
+export type Time = number;
 export type StoppingPattern = string;
 
 export class Stop {
