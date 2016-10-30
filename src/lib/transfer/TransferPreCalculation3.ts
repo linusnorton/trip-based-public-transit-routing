@@ -18,7 +18,7 @@ export default class TransferPreCalculation3 {
         this.footpathRepository = footpathRepository;
         this.transfers = Map<Trip, Map<number, Transfer[]>>().withMutations(map => {
             for (const transfer of transfers) {
-                map.updateIn([transfer.tripT, transfer.stopI], <Transfer[]>[], prev => prev.concat(transfer));
+                map.updateIn([transfer.tripT, transfer.stopI], [], prev => prev.concat(transfer));
             }
         });
     }
