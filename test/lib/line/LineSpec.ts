@@ -32,4 +32,11 @@ describe("Line", () => {
         chai.expect(line.getEarliestTripAt(1, 1007)).to.deep.equal(expected);
     });
 
+    it("returns trips after a certain point", () => {
+        const line = new Line([TripFixtures.tripA, TripFixtures.tripB, TripFixtures.tripC]);
+        const expected = [TripFixtures.tripB, TripFixtures.tripC];
+
+        chai.expect(line.tripsAfterAndIncluding(TripFixtures.tripB)).to.deep.equal(expected);
+    });
+
 });

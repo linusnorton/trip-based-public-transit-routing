@@ -54,4 +54,14 @@ export default class Line {
         return new None();
     }
 
+    /**
+     * Return all trips including and after the given trip
+     *
+     * @param trip
+     * @returns {Trip[]}
+     */
+    public tripsAfterAndIncluding(trip: Trip): Trip[] {
+        return this.trips.slice(this.trips.indexOf(trip));
+    }
+
 }

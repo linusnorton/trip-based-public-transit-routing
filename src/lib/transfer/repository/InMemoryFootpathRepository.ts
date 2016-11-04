@@ -3,7 +3,7 @@ import FootpathRepository from "./FootpathRepository";
 import {Stop, Station} from "../../trip/Trip";
 import {Duration} from "./FootpathRepository";
 import {FootpathNotFoundError} from "./FootpathRepository";
-import {Map} from 'immutable';
+import {Map, Seq} from 'immutable';
 
 type FootpathMap = Map<Station, Map<Station, Duration>>;
 
@@ -30,9 +30,10 @@ export default class InMemoryFootpathRepository implements FootpathRepository {
             throw new FootpathNotFoundError(`No footpath entry for ${stop.station}. There should at least be interchange`);
         }
 
-        return this.footpaths.get(stop.station).map((d: Duration, s: Station): Stop => {
-            return new Stop(s, stop.arrivalTime + d, Infinity);
-        }).toArray();
+        return this.footpaths
+                .get(stop.station)
+                .map((d: Duration, s: Station): Stop => new Stop(s, stop.arrivalTime + d, Infinity))
+                .toArray();
     }
 
     /**
@@ -41,6 +42,17 @@ export default class InMemoryFootpathRepository implements FootpathRepository {
      */
     public getInterchangeAt(station: Station): Duration {
         return this.footpaths.get(station).get(station);
+    }
+
+    /**
+     * @param destination
+     * @returns {[Station, Duration][]}
+     */
+    public getArrivalsAt(destination: Station): [Station, Duration][] {
+        return this.footpaths
+                .filter((v, origin) => v.has(destination))
+                .map((v ,origin):[Station, Duration] => [origin, v.get(destination)])
+                .toArray();
     }
 
 }

@@ -7,6 +7,7 @@ export class FootpathNotFoundError extends Error {}
 interface FootpathRepository {
     getConnectedStopsFor(stop: Stop): Stop[];
     getInterchangeAt(station: Station): Duration;
+    getArrivalsAt(destination: Station): [Station, Duration][];
 }
 
 export default FootpathRepository;
