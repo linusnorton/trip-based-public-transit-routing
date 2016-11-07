@@ -4,7 +4,7 @@ import Trip from "../trip/Trip";
 import {Station, Time} from "../trip/Trip";
 import FootpathRepository from "./repository/FootpathRepository";
 import {Stop} from "../trip/Trip";
-import {Map, List} from "immutable";
+import {Map} from "immutable";
 
 export default class TransferPreCalculation3 {
     private footpathRepository: FootpathRepository;
@@ -30,9 +30,14 @@ export default class TransferPreCalculation3 {
      * @param trips
      * @returns {Transfer[]}
      */
-    public getTransfers(trips: Trip[]): Transfer[] {
-        // get the transfers for each trip and flatten into a single array
-        return List(trips).flatMap<number, Transfer>(this.getTransfersForTrip).toArray();
+    public getTransfers(trips: Trip[]): Map<Trip, Map<number, Transfer[]>> {
+        let results = Map<Trip, Map<number, Transfer[]>>();
+
+        for (const trip of trips) {
+            results = results.set(trip, this.getTransfersForTrip(trip));
+        }
+
+        return results;
     }
 
     /**
@@ -41,7 +46,7 @@ export default class TransferPreCalculation3 {
      * @param trip
      * @returns {Transfer[]}
      */
-    private getTransfersForTrip = (trip: Trip): Transfer[] => {
+    private getTransfersForTrip = (trip: Trip): Map<number, Transfer[]> => {
         let arrivals = Map<Station, Time>();
         let departures = Map<Station, Time>();
 
@@ -72,11 +77,11 @@ export default class TransferPreCalculation3 {
             return keep;
         };
 
-        let transfers: Transfer[] = [];
+        let transfers = Map<number, Transfer[]>();
 
         // iterate back from the last stop to the second stop, len(stops) -1 ... 1 storing the useful transfers
         for (let i = trip.stops.length - 1; i > 0; i--) {
-            transfers = transfers.concat(getTransfersForStop(trip.stops[i], i));
+            transfers = transfers.set(i, getTransfersForStop(trip.stops[i], i));
         }
 
         return transfers;

@@ -13,6 +13,8 @@ export default class TransferPreCalculation2 {
     }
 
     /**
+     * Remove transfers that are a U-turn where a transfer is possible at the preceding stop.
+     *
      * @param transfers
      * @returns {Transfer[]}
      */
@@ -20,7 +22,7 @@ export default class TransferPreCalculation2 {
         return transfers.filter(transfer => {
             const interchange = this.footpathRepository.getInterchangeAt(transfer.getStationPriorToTransfer());
 
-            return !transfer.isUTurn() || transfer.canChangeEarlier(interchange);
+            return !(transfer.isUTurn() && transfer.canChangeEarlier(interchange));
         });
     }
 }
