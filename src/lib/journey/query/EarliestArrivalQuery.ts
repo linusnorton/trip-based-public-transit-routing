@@ -7,6 +7,8 @@ import Line from "../../line/Line";
 import {Duration} from "../../transfer/repository/FootpathRepository";
 import NestedTripSegmentQueue from "../NestedTripSegmentQueue";
 import Transfer from "../../transfer/Transfer";
+import Journey from "../Journey";
+import QueryResults from "./QueryResults";
 
 declare module "immutable" {
     interface Map<K, V> {
@@ -42,16 +44,18 @@ export default class EarliestArrivalQuery {
      * @param departureTime
      * @returns {any}
      */
-    public getJourney(origin: Station, destination: Station, departureTime: Time): Map<number, Time> {
+    public getJourney(origin: Station, destination: Station, departureTime: Time): QueryResults {
         let destinationLines = this.getDestinationLines(destination);
         let queues = this.getReachableTripSegments(origin, departureTime);
         let numTransfers = 0;
         let earliestArrival = Infinity;
-        let results = Map<number, Time>();
+        let results = new QueryResults();
 
         while (!queues.empty(numTransfers)) {
             // for each trip segment in the queue at this depth
-            for (const [trip, b, e] of queues.get(numTransfers)) {
+            for (const tripSegment of queues.get(numTransfers)) {
+                const {trip, b, e} = tripSegment;
+
                 // for each line that takes us to our destination and is connected using the current trip
                 for (const [line, i, footpathTime] of destinationLines.get(trip, [])) {
                     // the line arrives before the potential destination (on the same line)
@@ -59,17 +63,17 @@ export default class EarliestArrivalQuery {
                     if (b < i && trip.stops[i].arrivalTime + footpathTime < earliestArrival) {
                         // update the earliest arrival and store the result
                         earliestArrival = trip.stops[i].arrivalTime + footpathTime;
-                        results = results.set(numTransfers, earliestArrival);
+                        results.add(queues.extractJourney(tripSegment.upTo(i)));
                     }
                 }
 
                 // if the next stop arrives before our best arrival time, look at more relevant transfers
-                if (trip.stops[b + 1].arrivalTime < earliestArrival) {
+                if (trip.stops[b + 1].arrivalTime < earliestArrival) { //todo this could be inside the for loop
                     // for every stop after the start of the trip segment, up to and including the end
                     for (let i = b + 1; i < e + 1; i++) {
                         // add any transfers from this stop
                         for (const transfer of this.transfers.getIn([trip, i], [])) {
-                            queues.add(transfer.tripU, transfer.stopJ, numTransfers + 1);
+                            queues.add(transfer.tripU, transfer.stopJ, numTransfers + 1, tripSegment.upTo(i));
                         }
                     }
                 }

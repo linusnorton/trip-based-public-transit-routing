@@ -9,6 +9,10 @@ import TransferPreCalculation3 from "../../../../src/lib/transfer/TransferPreCal
 import {TripFixtures} from "../../trip/TripSpec";
 import LineFactory from "../../../../src/lib/line/LineFactory";
 import EarliestArrivalQuery from "../../../../src/lib/journey/query/EarliestArrivalQuery";
+import Journey from "../../../../src/lib/journey/Journey";
+import Leg from "../../../../src/lib/journey/Leg";
+import {Stop} from "../../../../src/lib/trip/Trip";
+import QueryResults from "../../../../src/lib/journey/query/QueryResults";
 
 describe("EarliestArrivalQuery", () => {
 
@@ -30,10 +34,19 @@ describe("EarliestArrivalQuery", () => {
         const query = new EarliestArrivalQuery(lines, transfers, footpathRepo);
 
         chai.expect(query.getJourney("A", "B", 900)).to.deep.equal(
-            Map().set(0, 1005)
+            new QueryResults([new Journey([
+                new Leg([new Stop("A", Infinity, 1000), new Stop("B", 1005, 1006)])
+            ])])
         );
+
         chai.expect(query.getJourney("A", "C", 900)).to.deep.equal(
-            Map().set(0, 1010)
+            new QueryResults([new Journey([
+                new Leg([
+                    new Stop("A", Infinity, 1000),
+                    new Stop("B", 1005, 1006),
+                    new Stop("C", 1010, Infinity),
+                ])
+            ])])
         );
     });
 
@@ -56,15 +69,15 @@ describe("EarliestArrivalQuery", () => {
         const query = new EarliestArrivalQuery(lines, transfers, footpathRepo);
 
         chai.expect(query.getJourney("A", "D", 900)).to.deep.equal(
-            Map()
+            new QueryResults()
         );
     });
 
-    it("returns an empty set when no journey is possible", () => {
+    it("uses transfers and footpaths to get to additional stops", () => {
         const footpathRepo = new InMemoryFootpathRepository(Map({
             "A": Map({"A": 1}),
-            "B": Map({"B": 1}),
-            "C": Map({"C": 1, "X": 1}),
+            "B": Map({"B": 1, "X": 1}),
+            "C": Map({"C": 1}),
             "X": Map({"X": 1}),
             "Y": Map({"Y": 1}),
             "Z": Map({"Z": 1}),
@@ -80,8 +93,17 @@ describe("EarliestArrivalQuery", () => {
 
         const query = new EarliestArrivalQuery(lines, transfers, footpathRepo);
 
-        chai.expect(query.getJourney("A", "Z", 900)).to.deep.equal(
-            Map().set(1, 1111)
+        chai.expect(query.getJourney("A", "Y", 900)).to.deep.equal(
+            new QueryResults([new Journey([
+                new Leg([
+                    new Stop("A", Infinity, 1000),
+                    new Stop("B", 1005, 1006),
+                ]),
+                new Leg([
+                    new Stop("X", Infinity, 1102),
+                    new Stop("Y", 1106, 1107),
+                ]),
+            ])])
         );
     });
 
