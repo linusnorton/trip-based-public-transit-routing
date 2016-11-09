@@ -7,7 +7,6 @@ import Line from "../../line/Line";
 import {Duration} from "../../transfer/repository/FootpathRepository";
 import NestedTripSegmentQueue from "../NestedTripSegmentQueue";
 import Transfer from "../../transfer/Transfer";
-import Journey from "../Journey";
 import QueryResults from "./QueryResults";
 
 declare module "immutable" {
@@ -38,6 +37,7 @@ export default class EarliestArrivalQuery {
     }
 
     /**
+     * Perform a breadth first search of trips in order to construct a set of journeys from origin to destination
      *
      * @param origin
      * @param destination
@@ -125,7 +125,7 @@ export default class EarliestArrivalQuery {
             const time = station === origin ? departureTime : departureTime + duration;
 
             for (const [index, line] of this.lineRepository.linesForStation(station)) {
-                line.getEarliestTripAt(index, time).match<any>({
+                line.getEarliestTripAt(index, time).match({
                     none: () => {},
                     some: trip => queue.add(trip, index, 0)
                 });

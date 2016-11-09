@@ -1,12 +1,18 @@
 
-import FootpathRepository from "./Footpath";
+import FootpathRepository from "./FootpathRepository";
 import {Station, Stop} from "../../trip/Trip";
-import {Duration} from "./Footpath";
+import {Duration} from "./FootpathRepository";
+import InMemoryFootpathRepository from "./InMemoryFootpathRepository";
 
-export default class DatabaseFootpathRepository implements FootpathRepository {
+export default class DatabaseFootpathRepository {
+    private db;
 
-    getConnectedStopsFor(stop: Stop): Stop[] {
-        return undefined; // const stopQ = new Stop(station, tripT.stops[i].arrivalTime + duration, null);
+    public constructor(db) {
+        this.db = db;
+    }
+
+    public async getMemoryRepository(): Promise<InMemoryFootpathRepository> {
+        return undefined;
     }
 
 }

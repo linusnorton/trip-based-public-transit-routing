@@ -24,12 +24,14 @@ export class Stop {
 
 export default class Trip {
     stops: Stop[];
+    id: number;
 
     /**
      * @param stops
      */
-    public constructor(stops: Stop[]) {
+    public constructor(stops: Stop[], id?: number) {
         this.stops = stops;
+        this.id = id;
     }
 
     /**

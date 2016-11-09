@@ -28,7 +28,7 @@ export default class TransferPreCalculation3 {
      * transfers that were useful to a trip.
      *
      * @param trips
-     * @returns {Transfer[]}
+     * @returns {Map<Trip, Map<number, Transfer[]>>} transfers indexed by trip and trip stop
      */
     public getTransfers(trips: Trip[]): Map<Trip, Map<number, Transfer[]>> {
         let results = Map<Trip, Map<number, Transfer[]>>();
@@ -44,7 +44,7 @@ export default class TransferPreCalculation3 {
      * Return the transfers that improve this trip's arrival time at any station along the trip.
      *
      * @param trip
-     * @returns {Transfer[]}
+     * @returns {Map<number, Transfer[]>}
      */
     private getTransfersForTrip = (trip: Trip): Map<number, Transfer[]> => {
         let arrivals = Map<Station, Time>();

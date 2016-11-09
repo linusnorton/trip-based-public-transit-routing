@@ -1,4 +1,5 @@
 import Trip from "../Trip";
+import {Stop} from "../Trip";
 
 interface TripRepository {
     getTrips(): Promise<Trip[]>;
@@ -19,8 +20,28 @@ export class DatabaseTripRepository implements TripRepository {
     /**
      * @returns {Promise<Trip[]>}
      */
-    getTrips(): Promise<Trip[]> {
-        return undefined;
+    public async getTrips(): Promise<Trip[]> {
+        const trips = [];
+        const rows = await this.db.query(`
+            SELECT * FROM trips 
+            JOIN stop_times USING(trip_id)
+            JOIN stops USING(stop_id)
+            ORDER BY stop_sequence
+        `);
+
+        let stops = [];
+        let tripId = rows[0]["trip_id"];
+        
+        for (const row of rows) {
+            if (row["trip_id"] != tripId) {
+                trips.push(new Trip(stops, row["trip_id"]));
+                stops = [];
+            }
+
+            stops.push(new Stop(row["parent_station"], row["arrival_time"], row["departure_time"]));
+        }
+
+        return trips;
     }
 
 }

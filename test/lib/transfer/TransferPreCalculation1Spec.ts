@@ -2,7 +2,7 @@
 import * as chai from "chai";
 import Line from "../../../src/lib/line/Line";
 import {TripFixtures} from "../trip/TripSpec";
-import {InMemoryLineRepository} from "../../../src/lib/line/repository/InMemoryLineRepository";
+import InMemoryLineRepository from "../../../src/lib/line/repository/InMemoryLineRepository";
 import InMemoryFootpathRepository from "../../../src/lib/transfer/repository/InMemoryFootpathRepository";
 import TransferPreCalculation1 from "../../../src/lib/transfer/TransferPreCalculation1";
 import Transfer from "../../../src/lib/transfer/Transfer";

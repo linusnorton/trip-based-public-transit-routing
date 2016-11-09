@@ -2,7 +2,7 @@ import Trip from "../trip/Trip";
 import Line from "./Line";
 import {StoppingPattern} from "../trip/Trip";
 import {Option, Some, None} from "ts-option";
-import {InMemoryLineRepository} from "./repository/InMemoryLineRepository";
+import InMemoryLineRepository from "./repository/InMemoryLineRepository";
 import {Map} from "immutable";
 
 declare module "immutable" {

@@ -4,7 +4,7 @@ import * as chai from "chai";
 import Line from "../../../src/lib/line/Line";
 import LineFactory from "../../../src/lib/line/LineFactory";
 import {TripFixtures} from "../trip/TripSpec";
-import {InMemoryLineRepository} from "../../../src/lib/line/repository/InMemoryLineRepository";
+import InMemoryLineRepository from "../../../src/lib/line/repository/InMemoryLineRepository";
 import {Map} from "immutable";
 
 describe("LineFactory", () => {

@@ -32,7 +32,7 @@ export default class InMemoryFootpathRepository implements FootpathRepository {
 
         return this.footpaths
                 .get(stop.station)
-                .map((d: Duration, s: Station): Stop => new Stop(s, stop.arrivalTime + d, Infinity))
+                .map((duration, stopT) => new Stop(stopT, stop.arrivalTime + duration, Infinity))
                 .toArray();
     }
 

@@ -15,7 +15,7 @@ type LineTripMap = Map<Trip, Line>;
 type LineWithIndex = [number, Line];
 type LineStationMap = Map<Station, LineWithIndex[]>;
 
-export class InMemoryLineRepository implements LineRepository {
+export default class InMemoryLineRepository implements LineRepository {
     private lines: Line[];
     private linesByTrip: LineTripMap;
     private linesByStation: LineStationMap;
@@ -64,5 +64,9 @@ export class InMemoryLineRepository implements LineRepository {
      */
     public lineForTrip(trip: Trip): Line {
         return this.linesByTrip.get(trip);
+    }
+
+    public getLines(): Line[] {
+        return this.lines;
     }
 }

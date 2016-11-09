@@ -42,7 +42,7 @@ export default class TransferPreCalculation1 {
                         if (j === line.stoppingStations().length -1) continue;
 
                         // find the first trip on the line that we can board
-                        line.getEarliestTripAt(j, stopQ.arrivalTime).match<any>({
+                        line.getEarliestTripAt(j, stopQ.arrivalTime).match({
                             none: () => {},
                             some: (tripU: Trip) => {
                                 // add the transfer if:
