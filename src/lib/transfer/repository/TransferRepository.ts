@@ -18,15 +18,16 @@ export default class TransferRepository {
         return Promise.all(transfers.map(this.storeTripTransfers).toArray());
     }
 
-    private storeTripTransfers = async(transfers: Map<number, Transfer[]>, trip: Trip): Promise<any> => {
+    private storeTripTransfers = async(tripTransfers: Map<number, Transfer[]>, trip: Trip): Promise<any> => {
         const rows = [];
         
-        for (const [i, transfers] of transfers) {
+        for (const [i, transfers] of tripTransfers) {
             for (const transfer of transfers) {
                 rows.push(`(...)`);
             }
         }
-        this.db.query(`
+
+        return this.db.query(`
             INSERT INTO trip_transfers ()
         `);
     }

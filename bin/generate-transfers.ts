@@ -1,4 +1,3 @@
-#!/usr/bin/env ts-node --max-old-heap=8184
 
 import Container from "../src/app/Container";
 

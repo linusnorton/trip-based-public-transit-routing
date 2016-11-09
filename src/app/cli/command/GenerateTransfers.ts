@@ -31,6 +31,7 @@ export default class GenerateTransfers implements Command {
      * Generate the lines and transfers for all trips in the database
      */
     public async run(): Promise<void> {
+        console.log("Start command");
         const [trips, footpathRepository] = await Promise.all([
             this.tripRepository.getTrips(),
             this.footpathRepository.getMemoryRepository()

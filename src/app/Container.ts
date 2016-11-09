@@ -35,7 +35,7 @@ export default class {
         return new DatabaseLineRepository(this.db());
     }
 
-    @cached 
+    @cached
     public transferRepository(): TransferRepository {
         return new TransferRepository(this.db());
     }
