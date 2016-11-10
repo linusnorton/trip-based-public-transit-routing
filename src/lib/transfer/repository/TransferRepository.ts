@@ -3,33 +3,60 @@ import Transfer from "../Transfer";
 import Trip from "../../trip/Trip";
 import {Map} from "immutable";
 
+type TransfersMap = Map<Trip, Map<number, Transfer[]>>;
+
 export default class TransferRepository {
     private db;
 
+    /** 
+     * @param db 
+     */
     public constructor(db) {
         this.db = db;
     }
 
-    public getTransfers(): Map<Trip, Map<number, Transfer[]>> {
+    /**
+     * Load transfers from the database
+     * 
+     * @returns {TransfersMap}
+     */
+    public getTransfers(): TransfersMap {
         return undefined;
     }
     
-    public storeTransfers(transfers: Map<Trip, Map<number, Transfer[]>>): any {
-        return Promise.all(transfers.map(this.storeTripTransfers).toArray());
+    /**
+     * Store the given transfers in the database
+     * 
+     * @param transfers
+     */
+    public async storeTransfers(transfers: TransfersMap): Promise<any> {
+        const rows = transfers.map(this.getRows).flatten().valueSeq();
+        
+        return this.db.query(`
+            INSERT INTO trip_transfers VALUES ${rows.join(",")}
+        `);
     }
 
-    private storeTripTransfers = async(tripTransfers: Map<number, Transfer[]>, trip: Trip): Promise<any> => {
+    /**
+     * 
+     */
+    private getRows(tripTransfers: Map<number, Transfer[]>, trip: Trip): string[] {
         const rows = [];
         
         for (const [i, transfers] of tripTransfers) {
             for (const transfer of transfers) {
-                rows.push(`(...)`);
+                const fields = [
+                    transfer.tripT.id, 
+                    transfer.stopI, 
+                    transfer.tripU.id, 
+                    transfer.stopJ
+                ];
+
+                rows.push(`(${fields.join(",")})`);
             }
         }
 
-        return this.db.query(`
-            INSERT INTO trip_transfers ()
-        `);
+        return rows;
     }
 
 }

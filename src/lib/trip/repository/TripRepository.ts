@@ -1,13 +1,13 @@
 import Trip from "../Trip";
 import {Stop} from "../Trip";
 
-interface TripRepository {
-    getTrips(): Promise<Trip[]>;
+declare module "immutable" {
+    interface Map<K, V> {
+        [Symbol.iterator](): IterableIterator<[K,V]>;
+    }
 }
 
-export default TripRepository;
-
-export class DatabaseTripRepository implements TripRepository {
+export default class TripRepository {
     private db;
 
     /**

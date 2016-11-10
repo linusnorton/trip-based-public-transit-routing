@@ -1,4 +1,4 @@
-import { DatabaseTripRepository } from './../lib/trip/repository/TripRepository';
+import TripRepository from './../lib/trip/repository/TripRepository';
 import DatabaseFootpathRepository from '../lib/transfer/repository/DatabaseFootpathRepository';
 import DatabaseLineRepository from "../lib/line/repository/DatabaseLineRepository";
 import GenerateTransfers from "./cli/command/GenerateTransfers";
@@ -21,8 +21,8 @@ export default class {
     }
 
     @cached
-    public tripRepository(): DatabaseTripRepository {
-        return new DatabaseTripRepository(this.db());
+    public tripRepository(): TripRepository {
+        return new TripRepository(this.db());
     }
 
     @cached
