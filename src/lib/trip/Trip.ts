@@ -28,6 +28,7 @@ export default class Trip {
 
     /**
      * @param stops
+     * @param id
      */
     public constructor(stops: Stop[], id?: number) {
         this.stops = stops;

@@ -23,7 +23,7 @@ export default class TripRepository {
     public async getTrips(): Promise<Trip[]> {
         const trips = [];
         const [rows] = await this.db.query(`
-            SELECT * FROM trips 
+            SELECT trip_id, parent_station, arrival_time, departure_time FROM trips 
             JOIN stop_times USING(trip_id)
             JOIN stops USING(stop_id)
             ORDER BY trip_id, stop_sequence
@@ -31,7 +31,6 @@ export default class TripRepository {
 
         let stops = [];
         let tripId = rows[0]["trip_id"];
-        let i = 0;
 
         for (const row of rows) {
             if (row["trip_id"] !== tripId) {

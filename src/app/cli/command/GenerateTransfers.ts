@@ -31,19 +31,20 @@ export default class GenerateTransfers implements Command {
      * Generate the lines and transfers for all trips in the database
      */
     public async run(): Promise<void> {
+        console.log(process.memoryUsage());
         const [trips, footpathRepository] = await Promise.all([
             this.tripRepository.getTrips(),
             this.footpathRepository.getMemoryRepository()
         ]) ;
-
         console.info("Loaded trips and footpaths");
+        console.log(process.memoryUsage());
         const lineFactory = new LineFactory();
         const lines = lineFactory.getLines(trips);
 
         console.info("Generated lines");
+        console.log(process.memoryUsage());
         const p1 = new TransferPreCalculation1(lines, footpathRepository);
-        const p2 = new TransferPreCalculation2(footpathRepository);
-        const p3 = new TransferPreCalculation3(footpathRepository, p2.getTransfers(p1.getTransfers(trips)));
+        const p3 = new TransferPreCalculation3(footpathRepository, p1.getTransfers(trips));
 
         console.info("Calculated initial transfers and filtered u-turns");
         const transfers = p3.getTransfers(trips);

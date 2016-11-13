@@ -3,6 +3,7 @@ import Trip from "../trip/Trip";
 import LineRepository from "../line/repository/LineRepository";
 import Transfer from "./Transfer";
 import FootpathRepository from "./repository/FootpathRepository";
+import {Map} from "immutable";
 
 export default class TransferPreCalculation1 {
     private lineRepository: LineRepository;
@@ -22,8 +23,8 @@ export default class TransferPreCalculation1 {
      *
      * @param trips
      */
-    public getTransfers(trips: Trip[]): Transfer[] {
-        const transfers: Transfer[] = [];
+    public getTransfers(trips: Trip[]): Map<Trip, Map<number, Transfer[]>> {
+        const transfers: Map<Trip, Map<number, Transfer[]>> = Map<Trip, Map<number, Transfer[]>>().asMutable();
 
         // for each tripT
         for (const tripT of trips) {
@@ -50,7 +51,11 @@ export default class TransferPreCalculation1 {
                                 // - tripU dominates tripT (arrives earlier)
                                 // - we're transferring to an earlier stop on the same line
                                 if (tripLine != line || tripU.dominates(tripT) || j < i) {
-                                    transfers.push(new Transfer(tripT, i, tripU, j));
+                                    const transfer = new Transfer(tripT, i, tripU, j);
+
+                                    if (!transfer.isUTurn() || !transfer.canChangeEarlier(this.footpathRepository.getInterchangeAt(transfer.getStationPriorToTransfer()))) {
+                                        transfers.updateIn([transfer.tripT, transfer.stopI], [], prev => prev.concat(transfer));
+                                    }
                                 }
                             }
                         });
@@ -58,8 +63,10 @@ export default class TransferPreCalculation1 {
                 }
             }
         }
+        console.log("Done phase 1");
+        console.log(process.memoryUsage());
 
-        return transfers;
+        return transfers.asImmutable();
     }
 
 
