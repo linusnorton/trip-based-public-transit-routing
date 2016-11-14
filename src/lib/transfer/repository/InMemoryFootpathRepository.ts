@@ -3,7 +3,7 @@ import FootpathRepository from "./FootpathRepository";
 import {Stop, Station} from "../../trip/Trip";
 import {Duration} from "./FootpathRepository";
 import {FootpathNotFoundError} from "./FootpathRepository";
-import {Map, Seq} from 'immutable';
+import {Map} from 'immutable';
 
 type FootpathMap = Map<Station, Map<Station, Duration>>;
 

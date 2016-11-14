@@ -3,6 +3,12 @@ import Transfer from "../Transfer";
 import Trip from "../../trip/Trip";
 import {Map} from "immutable";
 
+declare module "immutable" {
+    interface Map<K, V> {
+        [Symbol.iterator](): IterableIterator<[K,V]>;
+    }
+}
+
 type TransfersMap = Map<Trip, Map<number, Transfer[]>>;
 
 export default class TransferRepository {
@@ -29,22 +35,43 @@ export default class TransferRepository {
      * 
      * @param transfers
      */
-    public async storeTransfers(transfers: TransfersMap): Promise<any> {
-        const rows = transfers.map(this.getRows).flatten().valueSeq();
-        
-        return this.db.query(`
-            INSERT INTO trip_transfers VALUES ${rows.join(",")}
-        `);
+    public async storeTransfers(transferMap: TransfersMap): Promise<void> {
+        // const rows = transfers
+        //     .valueSeq()             // turn Map into List of values
+        //     .map(this.getRows)      // map transfers into array of SQL inserts
+        //     .flatten()              // flatten into single array of SQL inserts
+        //     .join(",");             // join into single string value
+
+        const rows = [];
+
+        for (const [trip, tripTransfers] of transferMap) {
+            for (const [i, transfers] of tripTransfers) {
+                for (const transfer of transfers) {
+                    console.log(transfer);
+                    const fields = [
+                        transfer.tripT.id,
+                        transfer.stopI,
+                        transfer.tripU.id,
+                        transfer.stopJ
+                    ];
+
+                    rows.push(`(${fields.join(",")})`);
+                }
+            }
+        }
+
+        return this.db.query(`INSERT INTO trip_transfers VALUES ${rows}`);
     }
 
     /**
      * 
      */
-    private getRows(tripTransfers: Map<number, Transfer[]>, trip: Trip): string[] {
+    private getRows(tripTransfers: Map<number, Transfer[]>): string[] {
         const rows = [];
         
         for (const [i, transfers] of tripTransfers) {
             for (const transfer of transfers) {
+                console.log(transfer);
                 const fields = [
                     transfer.tripT.id, 
                     transfer.stopI, 

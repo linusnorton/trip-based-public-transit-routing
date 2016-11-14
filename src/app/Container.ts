@@ -19,6 +19,19 @@ export default class {
         });
     }
 
+    public dbFactory() {
+        return require("mysql2/promise").createPool({
+            host: 'localhost',
+            user: 'root',
+            password: null,
+            database: 'ojp',
+            connectionLimit: 5,
+            acquireTimeout: 1000,
+            Promise: require("bluebird")
+            //debug: ['ComQueryPacket', 'RowDataPacket']
+        });
+    }
+
     @cached
     public tripRepository(): TripRepository {
         return new TripRepository(this.db());
@@ -39,7 +52,7 @@ export default class {
         return new GenerateTransfers(
             this.tripRepository(),
             this.footpathDatabase(),
-            this.transferRepository(),
+            this.dbFactory,
         );
     }
 }

@@ -9,17 +9,17 @@ import TransferPreCalculation3 from "../../../lib/transfer/TransferPreCalculatio
 export default class GenerateTransfers implements Command {
     private tripRepository: TripRepository;
     private footpathRepository: DatabaseFootpathRepository;
-    private transferRepository: TransferRepository;
+    private dbFactory;
 
     /**
      * @param tripRepository
      * @param footpathRepository
-     * @param transferRepository
+     * @param dbFactory
      */
-    constructor(tripRepository: TripRepository, footpathRepository: DatabaseFootpathRepository, transferRepository: TransferRepository) {
+    constructor(tripRepository: TripRepository, footpathRepository: DatabaseFootpathRepository, dbFactory) {
         this.tripRepository = tripRepository;
         this.footpathRepository = footpathRepository;
-        this.transferRepository = transferRepository;
+        this.dbFactory = dbFactory;
     }
 
     /**
@@ -42,9 +42,23 @@ export default class GenerateTransfers implements Command {
         const p3 = new TransferPreCalculation3(footpathRepository, p1.getTransfers(trips));
 
         console.info("Calculated initial transfers and filtered u-turns");
+        console.log(process.memoryUsage());
         const transfers = p3.getTransfers(trips);
-    
-        return this.transferRepository.storeTransfers(transfers);
+
+        console.info("Removed useless transfers");
+        console.log(process.memoryUsage());
+        const db = this.dbFactory();
+        const transferRepository = new TransferRepository(db);
+
+        try {
+            await transferRepository.storeTransfers(transfers);
+        }
+        catch (err) {
+            console.error(err);
+        }
+        finally {
+            db.end();
+        }
     }
 
 }
