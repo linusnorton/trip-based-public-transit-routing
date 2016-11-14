@@ -7,6 +7,7 @@ import InMemoryFootpathRepository from "../../../src/lib/transfer/repository/InM
 import TransferPreCalculation1 from "../../../src/lib/transfer/TransferPreCalculation1";
 import Transfer from "../../../src/lib/transfer/Transfer";
 import {Map} from 'immutable';
+import {indexTransfers} from "./TransferPreCalculation3Spec";
 
 describe("Transfer pre-calculation step 1", () => {
 
@@ -33,10 +34,10 @@ describe("Transfer pre-calculation step 1", () => {
 
         const algorithm = new TransferPreCalculation1(lineRepo, footpathRepo);
 
-        const expected = [
+        const expected = indexTransfers([
             new Transfer(TripFixtures.tripA, 1, TripFixtures.tripC, 1),
             new Transfer(TripFixtures.tripC, 1, TripFixtures.tripB, 1),
-        ];
+        ]);
 
         chai.expect(algorithm.getTransfers(trips)).to.deep.equal(expected);
     });
@@ -68,14 +69,14 @@ describe("Transfer pre-calculation step 1", () => {
 
         const algorithm = new TransferPreCalculation1(lineRepo, footpathRepo);
 
-        const expected = [
+        const expected = indexTransfers([
             new Transfer(TripFixtures.tripA, 1, TripFixtures.tripC, 1),
             new Transfer(TripFixtures.tripA, 2, TripFixtures.tripD, 0),
             new Transfer(TripFixtures.tripB, 2, TripFixtures.tripD, 0),
             new Transfer(TripFixtures.tripC, 1, TripFixtures.tripB, 1),
             new Transfer(TripFixtures.tripC, 2, TripFixtures.tripD, 0),
-        ];
-        //console.dir(algorithm.getTransfers(trips), { depth: 5 });
+        ]);
+
         chai.expect(algorithm.getTransfers(trips)).to.deep.equal(expected);
     });
 
@@ -100,10 +101,10 @@ describe("Transfer pre-calculation step 1", () => {
 
         const algorithm = new TransferPreCalculation1(lineRepo, footpathRepo);
 
-        const expected = [
+        const expected = indexTransfers([
             new Transfer(TripFixtures.tripF, 1, TripFixtures.tripE, 2),
-        ];
-        //console.dir(algorithm.getTransfers(trips), { depth: 5 });
+        ]);
+
         chai.expect(algorithm.getTransfers(trips)).to.deep.equal(expected);
     });
 
@@ -128,10 +129,10 @@ describe("Transfer pre-calculation step 1", () => {
 
         const algorithm = new TransferPreCalculation1(lineRepo, footpathRepo);
 
-        const expected = [
+        const expected = indexTransfers([
             new Transfer(TripFixtures.tripE, 2, TripFixtures.tripF, 1),
-        ];
-        //console.dir(algorithm.getTransfers(trips), { depth: 5 });
+        ]);
+
         chai.expect(algorithm.getTransfers(trips)).to.deep.equal(expected);
     });
 });

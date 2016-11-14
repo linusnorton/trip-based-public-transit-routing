@@ -16,7 +16,6 @@ type LineWithIndex = [number, Line];
 type LineStationMap = Map<Station, LineWithIndex[]>;
 
 export default class InMemoryLineRepository implements LineRepository {
-    private lines: Line[];
     private linesByTrip: LineTripMap;
     private linesByStation: LineStationMap;
 
@@ -24,21 +23,18 @@ export default class InMemoryLineRepository implements LineRepository {
      * @param linesByStoppingPattern
      */
     public constructor(linesByStoppingPattern: LineMap) {
-        this.lines = [];
         this.linesByTrip = Map<Trip, Line>();
         this.linesByStation = Map<Station, LineWithIndex[]>();
 
         for (const [_, lines] of linesByStoppingPattern) {
             const stoppingStations = lines[0].stoppingStations();
-            this.lines.concat(lines);
 
             // index the lines by each station in the line, storing both the line and and the index of the station
             for (let j = 0; j < stoppingStations.length; j++) {
                 const station = lines[0].stoppingStations()[j];
-                const currentValue = this.linesByStation.get(station, []);
                 const linesWithIndex = lines.map((line): LineWithIndex => [j, line]);
 
-                this.linesByStation = this.linesByStation.set(station, currentValue.concat(linesWithIndex));
+                this.linesByStation = this.linesByStation.update(station, [], prev => prev.concat(linesWithIndex));
             }
 
             // set up an index for each trip's line
@@ -66,7 +62,4 @@ export default class InMemoryLineRepository implements LineRepository {
         return this.linesByTrip.get(trip);
     }
 
-    public getLines(): Line[] {
-        return this.lines;
-    }
 }

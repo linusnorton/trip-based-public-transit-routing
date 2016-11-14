@@ -1,12 +1,6 @@
 import Trip from "../Trip";
 import {Stop} from "../Trip";
 
-declare module "immutable" {
-    interface Map<K, V> {
-        [Symbol.iterator](): IterableIterator<[K,V]>;
-    }
-}
-
 export default class TripRepository {
     private db;
 
@@ -26,6 +20,9 @@ export default class TripRepository {
             SELECT trip_id, parent_station, arrival_time, departure_time FROM trips 
             JOIN stop_times USING(trip_id)
             JOIN stops USING(stop_id)
+            JOIN calendar USING (service_id)
+            WHERE CURDATE() >= start_date AND CURDATE() <= end_date
+            AND monday = 1
             ORDER BY trip_id, stop_sequence
         `);
 

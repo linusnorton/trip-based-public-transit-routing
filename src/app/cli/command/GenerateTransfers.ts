@@ -1,29 +1,24 @@
 import LineFactory from "../../../lib/line/LineFactory";
-import DatabaseLineRepository from "../../../lib/line/repository/DatabaseLineRepository";
 import TripRepository from "../../../lib/trip/repository/TripRepository";
 import Command from "./Command";
 import DatabaseFootpathRepository from "../../../lib/transfer/repository/DatabaseFootpathRepository";
 import TransferRepository from "../../../lib/transfer/repository/TransferRepository";
 import TransferPreCalculation1 from "../../../lib/transfer/TransferPreCalculation1";
-import TransferPreCalculation2 from "../../../lib/transfer/TransferPreCalculation2";
 import TransferPreCalculation3 from "../../../lib/transfer/TransferPreCalculation3";
 
 export default class GenerateTransfers implements Command {
     private tripRepository: TripRepository;
     private footpathRepository: DatabaseFootpathRepository;
-    private lineRepository: DatabaseLineRepository;
     private transferRepository: TransferRepository;
 
     /**
      * @param tripRepository
      * @param footpathRepository
-     * @param lineRepository
      * @param transferRepository
      */
-    constructor(tripRepository: TripRepository, footpathRepository: DatabaseFootpathRepository, lineRepository: DatabaseLineRepository, transferRepository: TransferRepository) {
+    constructor(tripRepository: TripRepository, footpathRepository: DatabaseFootpathRepository, transferRepository: TransferRepository) {
         this.tripRepository = tripRepository;
         this.footpathRepository = footpathRepository;
-        this.lineRepository = lineRepository;
         this.transferRepository = transferRepository;
     }
 

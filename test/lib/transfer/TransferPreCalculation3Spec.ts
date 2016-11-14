@@ -5,6 +5,7 @@ import InMemoryFootpathRepository from "../../../src/lib/transfer/repository/InM
 import TransferPreCalculation3 from "../../../src/lib/transfer/TransferPreCalculation3";
 import Transfer from "../../../src/lib/transfer/Transfer";
 import {Map} from 'immutable';
+import Trip from "../../../src/lib/trip/Trip";
 
 describe("Transfer pre-calculation step 3", () => {
 
@@ -18,12 +19,12 @@ describe("Transfer pre-calculation step 3", () => {
 
         const transfers = [new Transfer(TripFixtures.tripA, 2, TripFixtures.tripF, 2)];
         const trips = [TripFixtures.tripA, TripFixtures.tripF];
-        const algorithm = new TransferPreCalculation3(footpathRepo, transfers);
+        const algorithm = new TransferPreCalculation3(footpathRepo, indexTransfers(transfers));
         const expected = Map()
             .set(TripFixtures.tripA, Map().set(2, transfers).set(1, []))
             .set(TripFixtures.tripF, Map().set(3, []).set(2, []).set(1, []));
 
-        chai.expect(algorithm.getTransfers(trips)).to.deep.equal(expected);
+        chai.expect(algorithm.getTransfers(trips).toJS()).to.deep.equal(expected.toJS());
     });
 
     it("discards transfers that don't improve the arrival times", () => {
@@ -33,14 +34,14 @@ describe("Transfer pre-calculation step 3", () => {
             "C": Map({"C": 1})
         }));
 
-        const transfers = [new Transfer(TripFixtures.tripA, 1, TripFixtures.tripC, 1)];
+        const transfers = indexTransfers([new Transfer(TripFixtures.tripA, 1, TripFixtures.tripC, 1)]);
         const trips = [TripFixtures.tripA, TripFixtures.tripC];
         const algorithm = new TransferPreCalculation3(footpathRepo, transfers);
         const expected = Map()
             .set(TripFixtures.tripA, Map().set(2, []).set(1, []))
             .set(TripFixtures.tripC, Map().set(2, []).set(1, []));
 
-        chai.expect(algorithm.getTransfers(trips)).to.deep.equal(expected);
+        chai.expect(algorithm.getTransfers(trips).toJS()).to.deep.equal(expected.toJS());
     });
 
     it("keep transfers that improve the arrival times at stations that have been visited", () => {
@@ -50,14 +51,14 @@ describe("Transfer pre-calculation step 3", () => {
             "C": Map({"C": 1})
         }));
 
-        const transfers = [new Transfer(TripFixtures.tripB, 1, TripFixtures.tripC, 1)];
+        const transfers = indexTransfers([new Transfer(TripFixtures.tripB, 1, TripFixtures.tripC, 1)]);
         const trips = [TripFixtures.tripB, TripFixtures.tripC];
         const algorithm = new TransferPreCalculation3(footpathRepo, transfers);
         const expected = Map()
             .set(TripFixtures.tripB, Map().set(2, []).set(1, transfers))
             .set(TripFixtures.tripC, Map().set(2, []).set(1, []));
 
-        chai.expect(algorithm.getTransfers(trips)).to.deep.equal(expected);
+        chai.expect(algorithm.getTransfers(trips).toJS()).to.deep.equal(expected.toJS());
     });
 
     // this case is logically stupid but correct as it adds an arrival time at A
@@ -69,14 +70,14 @@ describe("Transfer pre-calculation step 3", () => {
             "D": Map({"D": 1})
         }));
 
-        const transfers = [new Transfer(TripFixtures.tripF, 1, TripFixtures.tripG, 2)];
+        const transfers = indexTransfers([new Transfer(TripFixtures.tripF, 1, TripFixtures.tripG, 2)]);
         const trips = [TripFixtures.tripF, TripFixtures.tripG];
         const algorithm = new TransferPreCalculation3(footpathRepo, transfers);
         const expected = Map()
             .set(TripFixtures.tripF, Map().set(3, []).set(2, []).set(1, transfers))
             .set(TripFixtures.tripG, Map().set(3, []).set(2, []).set(1, []));
 
-        chai.expect(algorithm.getTransfers(trips)).to.deep.equal(expected);
+        chai.expect(algorithm.getTransfers(trips).toJS()).to.deep.equal(expected.toJS());
     });
 
     it("remove transfers that only improve times before the change", () => {
@@ -86,14 +87,24 @@ describe("Transfer pre-calculation step 3", () => {
             "C": Map({"C": 1})
         }));
 
-        const transfers = [new Transfer(TripFixtures.tripC, 1, TripFixtures.tripB, 1)];
+        const transfers = indexTransfers([new Transfer(TripFixtures.tripC, 1, TripFixtures.tripB, 1)]);
         const trips = [TripFixtures.tripC, TripFixtures.tripB];
         const algorithm = new TransferPreCalculation3(footpathRepo, transfers);
         const expected = Map()
             .set(TripFixtures.tripC, Map().set(2, []).set(1, []))
             .set(TripFixtures.tripB, Map().set(2, []).set(1, []));
 
-        chai.expect(algorithm.getTransfers(trips)).to.deep.equal(expected);
+        chai.expect(algorithm.getTransfers(trips).toJS()).to.deep.equal(expected.toJS());
     });
 
 });
+
+export function indexTransfers(transfers: Transfer[]): Map<Trip, Map<number, Transfer[]>> {
+    const result = Map<Trip, Map<number, Transfer[]>>().asMutable();
+
+    for (const transfer of transfers) {
+        result.updateIn([transfer.tripT, transfer.stopI], [], prev => prev.concat(transfer));
+    }
+
+    return result.asImmutable();
+}

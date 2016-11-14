@@ -19,12 +19,14 @@ export default class TransferPreCalculation1 {
     }
 
     /**
-     * Algorithm 1 (p5). Loop over every stop in every trip and calculate the possible transfers
+     * Algorithm 1 & 2 (p5). Loop over every stop in every trip and calculate the possible transfers.
+     *
+     * For efficiency the second algorithm has also been added here. It will remove any unnecessary u-turn transfers.
      *
      * @param trips
      */
     public getTransfers(trips: Trip[]): Map<Trip, Map<number, Transfer[]>> {
-        const transfers: Map<Trip, Map<number, Transfer[]>> = Map<Trip, Map<number, Transfer[]>>().asMutable();
+        const transfers = Map<Trip, Map<number, Transfer[]>>().asMutable();
 
         // for each tripT
         for (const tripT of trips) {
@@ -50,9 +52,10 @@ export default class TransferPreCalculation1 {
                                 // - the line of tripT is not the same as the line of tripU
                                 // - tripU dominates tripT (arrives earlier)
                                 // - we're transferring to an earlier stop on the same line
-                                if (tripLine != line || tripU.dominates(tripT) || j < i) {
+                                if (tripLine !== line || tripU.dominates(tripT) || j < i) {
                                     const transfer = new Transfer(tripT, i, tripU, j);
 
+                                    // phase two of the algorithm, removing unnecessary u-turns
                                     if (!transfer.isUTurn() || !transfer.canChangeEarlier(this.footpathRepository.getInterchangeAt(transfer.getStationPriorToTransfer()))) {
                                         transfers.updateIn([transfer.tripT, transfer.stopI], [], prev => prev.concat(transfer));
                                     }
@@ -63,8 +66,6 @@ export default class TransferPreCalculation1 {
                 }
             }
         }
-        console.log("Done phase 1");
-        console.log(process.memoryUsage());
 
         return transfers.asImmutable();
     }

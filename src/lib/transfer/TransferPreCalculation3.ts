@@ -27,13 +27,13 @@ export default class TransferPreCalculation3 {
      * @returns {Map<Trip, Map<number, Transfer[]>>} transfers indexed by trip and trip stop
      */
     public getTransfers(trips: Trip[]): Map<Trip, Map<number, Transfer[]>> {
-        let results = Map<Trip, Map<number, Transfer[]>>();
+        let results = Map<Trip, Map<number, Transfer[]>>().asMutable();
 
         for (const trip of trips) {
-            results = results.set(trip, this.getTransfersForTrip(trip));
+            results.set(trip, this.getTransfersForTrip(trip));
         }
 
-        return results;
+        return results.asImmutable();
     }
 
     /**
@@ -73,14 +73,14 @@ export default class TransferPreCalculation3 {
             return keep;
         };
 
-        let transfers = Map<number, Transfer[]>();
+        let transfers = Map<number, Transfer[]>().asMutable();
 
         // iterate back from the last stop to the second stop, len(stops) -1 ... 1 storing the useful transfers
         for (let i = trip.stops.length - 1; i > 0; i--) {
-            transfers = transfers.set(i, getTransfersForStop(trip.stops[i], i));
+            transfers.set(i, getTransfersForStop(trip.stops[i], i));
         }
 
-        return transfers;
+        return transfers.asImmutable();
     }
 }
 

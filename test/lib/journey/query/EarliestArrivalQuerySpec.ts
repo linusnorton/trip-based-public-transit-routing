@@ -4,7 +4,6 @@ import * as chai from "chai";
 import {Map} from "immutable";
 import InMemoryFootpathRepository from "../../../../src/lib/transfer/repository/InMemoryFootpathRepository";
 import TransferPreCalculation1 from "../../../../src/lib/transfer/TransferPreCalculation1";
-import TransferPreCalculation2 from "../../../../src/lib/transfer/TransferPreCalculation2";
 import TransferPreCalculation3 from "../../../../src/lib/transfer/TransferPreCalculation3";
 import {TripFixtures} from "../../trip/TripSpec";
 import LineFactory from "../../../../src/lib/line/LineFactory";
@@ -27,8 +26,7 @@ describe("EarliestArrivalQuery", () => {
         const lineFactory = new LineFactory();
         const lines = lineFactory.getLines(trips);
         const p1 = new TransferPreCalculation1(lines, footpathRepo);
-        const p2 = new TransferPreCalculation2(footpathRepo);
-        const p3 = new TransferPreCalculation3(footpathRepo, p2.getTransfers(p1.getTransfers(trips)));
+        const p3 = new TransferPreCalculation3(footpathRepo, p1.getTransfers(trips));
         const transfers = p3.getTransfers(trips);
 
         const query = new EarliestArrivalQuery(lines, transfers, footpathRepo);
@@ -62,8 +60,7 @@ describe("EarliestArrivalQuery", () => {
         const lineFactory = new LineFactory();
         const lines = lineFactory.getLines(trips);
         const p1 = new TransferPreCalculation1(lines, footpathRepo);
-        const p2 = new TransferPreCalculation2(footpathRepo);
-        const p3 = new TransferPreCalculation3(footpathRepo, p2.getTransfers(p1.getTransfers(trips)));
+        const p3 = new TransferPreCalculation3(footpathRepo, p1.getTransfers(trips));
         const transfers = p3.getTransfers(trips);
 
         const query = new EarliestArrivalQuery(lines, transfers, footpathRepo);
@@ -87,8 +84,7 @@ describe("EarliestArrivalQuery", () => {
         const lineFactory = new LineFactory();
         const lines = lineFactory.getLines(trips);
         const p1 = new TransferPreCalculation1(lines, footpathRepo);
-        const p2 = new TransferPreCalculation2(footpathRepo);
-        const p3 = new TransferPreCalculation3(footpathRepo, p2.getTransfers(p1.getTransfers(trips)));
+        const p3 = new TransferPreCalculation3(footpathRepo, p1.getTransfers(trips));
         const transfers = p3.getTransfers(trips);
 
         const query = new EarliestArrivalQuery(lines, transfers, footpathRepo);

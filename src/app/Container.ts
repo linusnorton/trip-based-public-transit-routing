@@ -1,6 +1,5 @@
 import TripRepository from './../lib/trip/repository/TripRepository';
 import DatabaseFootpathRepository from '../lib/transfer/repository/DatabaseFootpathRepository';
-import DatabaseLineRepository from "../lib/line/repository/DatabaseLineRepository";
 import GenerateTransfers from "./cli/command/GenerateTransfers";
 import TransferRepository from "../lib/transfer/repository/TransferRepository";
 
@@ -31,11 +30,6 @@ export default class {
     }
 
     @cached
-    public lineDatabase(): DatabaseLineRepository {
-        return new DatabaseLineRepository(this.db());
-    }
-
-    @cached
     public transferRepository(): TransferRepository {
         return new TransferRepository(this.db());
     }
@@ -45,7 +39,6 @@ export default class {
         return new GenerateTransfers(
             this.tripRepository(),
             this.footpathDatabase(),
-            this.lineDatabase(),
             this.transferRepository(),
         );
     }
