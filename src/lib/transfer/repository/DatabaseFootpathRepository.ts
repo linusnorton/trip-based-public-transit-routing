@@ -23,7 +23,7 @@ export default class DatabaseFootpathRepository {
         const footpaths = Map<Station, Map<Station, Duration>>().withMutations(map => {
             for (const row of rows) {
                 const oldValue = map.get(row["from_stop_id"], Map<Station, Duration>());
-                const newValue = oldValue.set(row["to_stop_id"], row["duration"]);
+                const newValue = oldValue.set(row["to_stop_id"], parseInt(row["duration"]));
 
                 map.set(row["from_stop_id"], newValue);
             }

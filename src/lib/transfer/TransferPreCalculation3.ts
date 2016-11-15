@@ -43,8 +43,8 @@ export default class TransferPreCalculation3 {
      * @returns {Map<number, Transfer[]>}
      */
     private getTransfersForTrip = (trip: Trip): Map<number, Transfer[]> => {
-        let arrivals = Map<Station, Time>();
-        let departures = Map<Station, Time>();
+        const arrivals = Map<Station, Time>().asMutable();
+        const departures = Map<Station, Time>().asMutable();
 
         // Return any transfers passing through the given stop that improve the arrival or departure time
         const getTransfersForStop = (stopS: Stop, i: number): Transfer[] => {
@@ -60,14 +60,14 @@ export default class TransferPreCalculation3 {
         const updateArrivalAndDepartureTimesFromStop = (stopP: Stop): boolean => {
             let keep = stopP.arrivalTime < arrivals.get(stopP.station, Infinity);
 
-            arrivals = arrivals.update(stopP.station, Infinity, prev => Math.min(stopP.arrivalTime, prev));
+            arrivals.update(stopP.station, Infinity, prev => Math.min(stopP.arrivalTime, prev));
 
             for (const stopQ of this.footpathRepository.getConnectedStopsFor(stopP)) {
                 keep = keep || stopQ.arrivalTime < arrivals.get(stopQ.station, Infinity)
                             || stopQ.arrivalTime < departures.get(stopQ.station, Infinity);
 
-                arrivals = arrivals.update(stopQ.station, Infinity, prev => Math.min(stopQ.arrivalTime, prev));
-                departures = departures.update(stopQ.station, Infinity, prev => Math.min(stopQ.arrivalTime, prev));
+                arrivals.update(stopQ.station, Infinity, prev => Math.min(stopQ.arrivalTime, prev));
+                departures.update(stopQ.station, Infinity, prev => Math.min(stopQ.arrivalTime, prev));
             }
 
             return keep;

@@ -2,6 +2,7 @@ import TripRepository from './../lib/trip/repository/TripRepository';
 import DatabaseFootpathRepository from '../lib/transfer/repository/DatabaseFootpathRepository';
 import GenerateTransfers from "./cli/command/GenerateTransfers";
 import TransferRepository from "../lib/transfer/repository/TransferRepository";
+import RunQuery from "./cli/command/RunQuery";
 
 export default class {
 
@@ -53,6 +54,15 @@ export default class {
             this.tripRepository(),
             this.footpathDatabase(),
             this.dbFactory,
+        );
+    }
+
+    @cached
+    public runQueryCommand(): RunQuery {
+        return new RunQuery(
+            this.tripRepository(),
+            this.transferRepository(),
+            this.footpathDatabase()
         );
     }
 }
