@@ -10,7 +10,7 @@ import LineFactory from "../../../../src/lib/line/LineFactory";
 import EarliestArrivalQuery from "../../../../src/lib/journey/query/EarliestArrivalQuery";
 import Journey from "../../../../src/lib/journey/Journey";
 import Leg from "../../../../src/lib/journey/Leg";
-import {Stop} from "../../../../src/lib/trip/Trip";
+import {Stop, default as Trip} from "../../../../src/lib/trip/Trip";
 import QueryResults from "../../../../src/lib/journey/query/QueryResults";
 
 describe("EarliestArrivalQuery", () => {
@@ -98,6 +98,46 @@ describe("EarliestArrivalQuery", () => {
                 new Leg([
                     new Stop("X", Infinity, 1102),
                     new Stop("Y", 1106, 1107),
+                ]),
+            ])])
+        );
+    });
+
+    it("uses transfers to get to additional stops", () => {
+        const footpathRepo = new InMemoryFootpathRepository(Map({
+            "A": Map({"A": 1}),
+            "B": Map({"B": 1}),
+            "C": Map({"C": 1}),
+        }));
+
+        const tripA = new Trip([
+            new Stop("A", Infinity, 1000),
+            new Stop("B", 1010, Infinity)
+        ]);
+
+        const tripB = new Trip([
+            new Stop("B", 1015, 1016),
+            new Stop("C", 1020, Infinity)
+        ]);
+
+        const trips = [tripA, tripB];
+        const lineFactory = new LineFactory();
+        const lines = lineFactory.getLines(trips);
+        const p1 = new TransferPreCalculation1(lines, footpathRepo);
+        const p3 = new TransferPreCalculation3(footpathRepo, p1.getTransfers(trips));
+        const transfers = p3.getTransfers(trips);
+
+        const query = new EarliestArrivalQuery(lines, transfers, footpathRepo);
+
+        chai.expect(query.getJourney("A", "C", 900)).to.deep.equal(
+            new QueryResults([new Journey([
+                new Leg([
+                    new Stop("A", Infinity, 1000),
+                    new Stop("B", 1010, Infinity)
+                ]),
+                new Leg([
+                    new Stop("B", 1015, 1016),
+                    new Stop("C", 1020, Infinity)
                 ]),
             ])])
         );

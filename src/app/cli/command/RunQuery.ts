@@ -38,9 +38,25 @@ export default class RunQuery implements Command {
         const query = new EarliestArrivalQuery(lines, transfers, footpaths);
         console.log("query finished");
 
-        console.log(query.getJourney("MYB", "WWW", 3600 * 5));
+        const result = query.getJourney("DIS", "WWW", 3600 * 5);
+
+        for (const journey of result.getJourneys()) {
+            console.log(`${journey.origin}->${journey.destination}: ${displayTime(journey.duration())}`);
+            for (const leg of journey.legs) {
+                console.log(" ----");
+                for (const stop of leg.stops) {
+                    console.log(`  ${stop.station} ${displayTime(stop.departureTime)}`);
+                }
+            }
+        }
     }
 
+}
 
+function displayTime(timestamp: number) {
+    let hours   = Math.floor(timestamp / 3600);
+    let minutes = Math.floor((timestamp - (hours * 3600)) / 60);
+    let mins = (minutes < 10) ? "0" + minutes : minutes;
 
+    return hours+':'+mins;
 }

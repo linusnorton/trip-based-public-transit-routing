@@ -51,7 +51,7 @@ export default class NestedTripSegmentQueue {
     }
 
     public add(tripT: Trip, stopIndex: TripStopIndex, depth: number, previousSegment?: TripSegment): void {
-        const oldStopIndex = this.visitedTrips.get(tripT, tripT.stops.length);
+        const oldStopIndex = this.visitedTrips.get(tripT, tripT.stops.length - 1);
 
         if (stopIndex < oldStopIndex) {
             const segment = new TripSegment(tripT, stopIndex, oldStopIndex);

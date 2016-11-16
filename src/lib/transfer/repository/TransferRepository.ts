@@ -27,17 +27,24 @@ export default class TransferRepository {
      * @returns {TransfersMap}
      */
     public async getTransfers(trips: Trip[]): Promise<TransfersMap> {
+        const select = this.db.query("SELECT * FROM trip_transfers");
         const tripMap = Map<number, Trip>(trips.map(trip => [trip.id, trip]));
-        const rows = await this.db.query("SELECT * FROM trip_transfers");
+        const [rows] = await select;
         const transfers = Map<Trip, Map<number, Transfer[]>>().asMutable();
 
         for (const row of rows) {
-            const [tripTID, stopI, tripUID, stopJ] = row.map(parseInt);
-            const tripT = tripMap.get(tripTID);
-            const tripU = tripMap.get(tripUID);
+            const tripT = tripMap.get(parseInt(row["trip_t"]));
+            const stopI = parseInt(row["stop_i"]);
+            const tripU = tripMap.get(parseInt(row["trip_u"]));
+            const stopJ = parseInt(row["stop_j"]);
+            if (!tripU || !tripT) {
+                continue;
+            }
             const transfer = new Transfer(tripT, stopI, tripU, stopJ);
+            const oldValue = transfers.get(tripT, Map<number, Transfer[]>());
+            const newValue = oldValue.update(stopI, [], prev => prev.concat(transfer));
 
-            transfers.updateIn([tripT, stopI], [], prev => prev.concat(transfer));
+            transfers.set(tripT, newValue);
         }
 
         return transfers.asImmutable();

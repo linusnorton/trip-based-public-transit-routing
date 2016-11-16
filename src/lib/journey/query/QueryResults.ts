@@ -22,4 +22,11 @@ export default class QueryResults {
             .concat(journey);
     }
 
+    /**
+     * @returns {Journey[]}
+     */
+    public getJourneys(): Journey[] {
+        return this.journeys;
+    }
+
 }
